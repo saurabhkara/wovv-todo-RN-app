@@ -6,13 +6,7 @@ import NotesCard from "./components/NotesCard";
 import AddNotesModal from "./components/AddNotesModal";
 
 export default function App() {
-  const [notes, setNotes] = useState([
-    {
-      id: 1,
-      sub: "Workout",
-      desc: "Workout @5",
-    },
-  ]);
+  const [notes, setNotes] = useState([]);
   const [openCloseModal, setOpenCloseModal] = useState(false);
   const [updateNote, setUpdateNote] = useState();
 
@@ -57,16 +51,20 @@ export default function App() {
         Task 22-03-2023
       </Text>
       <Header onAddNote={() => setOpenCloseModal(true)} />
-      <ScrollView style={styles.notes}>
-        {notes.map((item, index) => (
-          <NotesCard
-            key={index}
-            item={item}
-            updateNote={handleUpdateNote}
-            deleteNote={deleteNote}
-          />
-        ))}
-      </ScrollView>
+      {!notes.length ? (
+        <Text style={{textAlign:'center',marginTop:'20%',fontSize:16}}>Please Add your todo</Text>
+      ) : (
+        <ScrollView style={styles.notes}>
+          {notes.reverse().map((item, index) => (
+            <NotesCard
+              key={index}
+              item={item}
+              updateNote={handleUpdateNote}
+              deleteNote={deleteNote}
+            />
+          ))}
+        </ScrollView>
+      )}
       {openCloseModal && (
         <AddNotesModal
           openCloseModal={openCloseModal}
