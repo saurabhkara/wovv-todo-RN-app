@@ -1,20 +1,99 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, Text, SafeAreaView, ScrollView } from "react-native";
+import { useState } from "react";
+import Header from "./components/Header";
+import NotesCard from "./components/NotesCard";
+import AddNotesModal from "./components/AddNotesModal";
 
 export default function App() {
+  const [notes, setNotes] = useState([
+    {
+      id: 1,
+      sub: "Workout",
+      desc: "Workout @5",
+    },
+  ]);
+  const [openCloseModal, setOpenCloseModal] = useState(false);
+  const [updateNote, setUpdateNote] = useState();
+
+  const handleAddNotes = (item) => {
+    setNotes([...notes, item]);
+    setOpenCloseModal(false);
+    setUpdateNote(null);
+  };
+
+  const handleUpdateNote = (item) => {
+    setUpdateNote(item);
+    setOpenCloseModal(true);
+  };
+
+  const selectAndUpdateNote = (item) => {
+    const updated = notes.map((n) => {
+      if (n.id === item.id) {
+        return {
+          id: n.id,
+          sub: item.sub,
+          desc: item.desc,
+        };
+      } else {
+        return n;
+      }
+    });
+    setNotes(updated);
+    setUpdateNote(null);
+    setOpenCloseModal(false);
+  };
+
+  const deleteNote = (item) => {
+    const updated = notes.filter((n) => {
+      return n.id !== item.id;
+    });
+    setNotes(updated);
+  };
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <SafeAreaView style={styles.container}>
+      <Text style={{ textAlign: "center", margin: "10%" }}>
+        Task 22-03-2023
+      </Text>
+      <Header onAddNote={() => setOpenCloseModal(true)} />
+      <ScrollView style={styles.notes}>
+        {notes.map((item, index) => (
+          <NotesCard
+            key={index}
+            item={item}
+            updateNote={handleUpdateNote}
+            deleteNote={deleteNote}
+          />
+        ))}
+      </ScrollView>
+      {openCloseModal && (
+        <AddNotesModal
+          openCloseModal={openCloseModal}
+          setOpenCloseModal={() => {
+            setOpenCloseModal(!setOpenCloseModal), setUpdateNote(null);
+          }}
+          handleAddNotes={(note) => handleAddNotes(note)}
+          updateNote={updateNote}
+          selectAndUpdateNote={selectAndUpdateNote}
+        />
+      )}
+      <StatusBar style="light" animated={true} />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#f0eae4",
+    paddingHorizontal: 15,
+  },
+  notes: {
+    width: "100%",
+    height: "60%",
+    // backgroundColor:'cyan',
+    marginTop: "10%",
+    padding: "5%",
   },
 });
